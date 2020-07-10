@@ -13,7 +13,7 @@ from keras.optimizers import SGD
 from keras.utils.np_utils import to_categorical
 from keras.applications.resnet50 import preprocess_input
 
-num_classes = 528 #训练样本类的个数
+num_classes = 528 
 
 ###====================== HYPER-PARAMETERS ===========================###
 ## Adam
@@ -47,7 +47,7 @@ def train():
     save_dir_ginit = "samples/srgan_ginit"
     save_dir_gan = "samples/srgan_gan"
     checkpoint_dir = "checkpoint"  # checkpoint_resize_conv
-    tl.files.exists_or_mkdir(save_dir_ginit)#创建子目录
+    tl.files.exists_or_mkdir(save_dir_ginit)
     tl.files.exists_or_mkdir(save_dir_gan)
     tl.files.exists_or_mkdir(checkpoint_dir)
 
@@ -58,19 +58,19 @@ def train():
 
     ###========================== DEFINE MODEL ============================###
     ## train inference
-    t_image_8 = tf.placeholder('float32', [batch_size,  16,   6, 3],  name='t_image_8')#存储不同尺度真实的HR图片
+    t_image_8 = tf.placeholder('float32', [batch_size,  16,   6, 3],  name='t_image_8')
     t_image_4 = tf.placeholder('float32', [batch_size,  32,   12, 3], name='t_image_4')
     t_image_2 = tf.placeholder('float32', [batch_size,  64,   24, 3], name='t_image_2')
     t_image_1 = tf.placeholder('float32', [batch_size,  128,  48, 3], name='t_image_1')
 
     # G and D
-    net_g_8                = SRGAN_g_8(t_image_8, is_train=True, reuse=False)#G
+    net_g_8                = SRGAN_g_8(t_image_8, is_train=True, reuse=False)
     net_g_4                = SRGAN_g_4(t_image_4, is_train=True, reuse=False)
     net_g_2                = SRGAN_g_2(t_image_2, is_train=True, reuse=False)
-    net_d_8, logits_real_8 = SRGAN_d_8(t_image_4, is_train=True, reuse=False)#D 输入的是真实的HR图片
+    net_d_8, logits_real_8 = SRGAN_d_8(t_image_4, is_train=True, reuse=False)
     net_d_4, logits_real_4 = SRGAN_d_4(t_image_2, is_train=True, reuse=False)
     net_d_2, logits_real_2 = SRGAN_d_2(t_image_1, is_train=True, reuse=False)
-    _,       logits_fake_8 = SRGAN_d_8(net_g_8.outputs,  is_train=True, reuse=True)#D 输入的是生成器生成的HR图片
+    _,       logits_fake_8 = SRGAN_d_8(net_g_8.outputs,  is_train=True, reuse=True)
     _,       logits_fake_4 = SRGAN_d_4(net_g_4.outputs,  is_train=True, reuse=True)
     _,       logits_fake_2 = SRGAN_d_2(net_g_2.outputs,  is_train=True, reuse=True)
 
@@ -82,38 +82,38 @@ def train():
     net_d_2.print_params(False)
 
     # VGG
-    t_image_1_224        = tf.image.resize_images(t_image_1, size=[224, 224], method=0, align_corners=False)#使用双线型插值法调整图片尺寸为224*224
-    t_image_2_224        = tf.image.resize_images(t_image_2, size=[224, 224], method=0, align_corners=False) #real image
+    t_image_1_224        = tf.image.resize_images(t_image_1, size=[224, 224], method=0, align_corners=False)
+    t_image_2_224        = tf.image.resize_images(t_image_2, size=[224, 224], method=0, align_corners=False)
     t_image_4_224        = tf.image.resize_images(t_image_4, size=[224, 224], method=0, align_corners=False)
-    t_net_g_2_output_224 = tf.image.resize_images(net_g_2.outputs, size=[224, 224], method=0, align_corners=False)# 合成的图像
+    t_net_g_2_output_224 = tf.image.resize_images(net_g_2.outputs, size=[224, 224], method=0, align_corners=False)
     t_net_g_4_output_224 = tf.image.resize_images(net_g_4.outputs, size=[224, 224], method=0, align_corners=False)
     t_net_g_8_output_224 = tf.image.resize_images(net_g_8.outputs, size=[224, 224], method=0, align_corners=False)
 
-    net_image_1_vgg,    vgg_image_1_emb         = Vgg19_simple_api((t_image_1_224+1)/2,  reuse=False)#真实图片
+    net_image_1_vgg,    vgg_image_1_emb         = Vgg19_simple_api((t_image_1_224+1)/2,  reuse=False)
     net_image_2_vgg,    vgg_image_2_emb         = Vgg19_simple_api((t_image_2_224+1)/2,  reuse=True)
     net_image_4_vgg,    vgg_image_4_emb         = Vgg19_simple_api((t_image_4_224+1)/2,  reuse=True)
-    net_g_2_output_vgg, vgg_net_g_2_output_emb  = Vgg19_simple_api((t_net_g_2_output_224+1)/2, reuse=True) #复原图片
+    net_g_2_output_vgg, vgg_net_g_2_output_emb  = Vgg19_simple_api((t_net_g_2_output_224+1)/2, reuse=True) 
     net_g_4_output_vgg, vgg_net_g_4_output_emb  = Vgg19_simple_api((t_net_g_4_output_224+1)/2, reuse=True)
     net_g_8_output_vgg, vgg_net_g_8_output_emb  = Vgg19_simple_api((t_net_g_8_output_224+1)/2, reuse=True)
 
 	# re-id
-    base_model = ResNet50(weights='F:/anaconda/Lib/site-packages/keras/models/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5', include_top=False, input_tensor=Input(shape=(224,224,3)))
+    base_model = ResNet50(weights='', include_top=False, input_tensor=Input(shape=(224,224,3)))
     x = base_model.output
-    x = Flatten()(x)#一维化
+    x = Flatten()(x)
     x = Dropout(0.9)(x)
 
     base_model_1 = ResNet50(
-        weights='F:/anaconda/Lib/site-packages/keras/models/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5',
+        weights='',
         include_top=False, input_tensor=Input(shape=(224, 224, 3)))
     x1 = base_model_1.output
-    x1 = Flatten()(x1)  # 一维化
+    x1 = Flatten()(x1)  
     x1 = Dropout(0.9)(x1)
 
     base_model_2 = ResNet50(
-        weights='F:/anaconda/Lib/site-packages/keras/models/resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5',
+        weights='',
         include_top=False, input_tensor=Input(shape=(224, 224, 3)))
     x2 = base_model_2.output
-    x2 = Flatten()(x2)  # 一维化
+    x2 = Flatten()(x2) 
     x2 = Dropout(0.9)(x2)
 
     x=[x,x1,x2]
@@ -200,7 +200,7 @@ def train():
     ###========================== RESTORE MODEL =============================###
     sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=False))
     tl.layers.initialize_global_variables(sess)
-    if tl.files.load_and_assign_npz(sess=sess, name=checkpoint_dir+'/viper_icsr_g_srgan8.npz', network=net_g_8) is False:#读取SRGAN中生成器的参数
+    if tl.files.load_and_assign_npz(sess=sess, name=checkpoint_dir+'/viper_icsr_g_srgan8.npz', network=net_g_8) is False:
         tl.files.load_and_assign_npz(sess=sess, name=checkpoint_dir+'/viper_icsr_g_srgan_init8.npz', network=net_g_8)
     tl.files.load_and_assign_npz(sess=sess, name=checkpoint_dir+'/viper_icsr_d_srgan8.npz', network=net_d_8)
     if tl.files.load_and_assign_npz(sess=sess, name=checkpoint_dir+'/viper_icsr_g_srgan4.npz', network=net_g_4) is False:
