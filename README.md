@@ -11,9 +11,10 @@ This repository is implementation of the "Muti-scale Deep Feature Representation
 ### Prerequisites
 python 3.6
 
+Numpy 1.15.4
+
 tensorflow 1.14.0
 
-GPUs,memory>11G
 
 ### Train 
 > Run `python train.py`
