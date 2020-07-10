@@ -257,7 +257,7 @@ def train():
             b_imgs_128 = tl.prepro.threading_data(
                     train_1_imgs[idx : idx + batch_size],
                     fn=downsample_fn_128)
-            b_imgs_64 = tl.prepro.threading_data(b_imgs_128, fn=downsample_fn_64)#使用下采样函数对图片进行同时处理
+            b_imgs_64 = tl.prepro.threading_data(b_imgs_128, fn=downsample_fn_64)
             b_imgs_32 = tl.prepro.threading_data(b_imgs_64, fn=downsample_fn_32)
             b_imgs_16 = tl.prepro.threading_data(b_imgs_32, fn=downsample_fn_16)
             ## update G
